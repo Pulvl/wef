@@ -1,0 +1,569 @@
+/** 
+*\file 
+*\brief Работа с двухмерными массивами
+*\author Shabalin
+*\version 1.0 
+*\example подсчет среднего арифметического элементов, располагающихся не выше главной и не выше побочной диагонали матрицы. 
+*/
+
+#include "stdafx.h"
+#include <clocale>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <time.h>
+#include <clocale>
+#include <memory.h>
+#define _CRTDBG_MAP_ALLOC
+#include <crtdbg.h>
+/**
+*\brief Простой метод, проверяющий веденные данные на число с плавающей точкой.
+* Используется в функции CheckFloatOnSegment()
+*\return Введенное число с плавающей точкой.
+*/
+float CheckFloat();
+//float CheckFloat(const char* a);
+/**
+*\brief Простой метод, проверяющий веденные данные на целое число.
+* Используется в функции CheckIntegerOnSegment()
+*\return Введенное целое число.
+*/
+int CheckInteger();
+//int CheckInteger(const char* a);
+/**
+*\brief Функция, проверяющая веденные данные на число с плавающей точкой лежащее на выбранном сегменте.
+* \param[in] min Минимальное значение
+* \param[in] max Максимальное значение
+*\return Введенное число с плавающей точкой.
+*/
+float CheckFloatOnSegment(double min, double max);
+//float CheckFloatOnSegment(const char* noDigital, const char* lessMin, const char* moreMax, double min, double max);
+/**
+*\brief Функция, проверяющая веденные данные на целое число.
+* \param[in] min Минимальное значение
+* \param[in] max Максимальное значение
+*\return Введенное целое число.
+*/
+int CheckIntegerOnSegment(int min, int max);
+//int CheckIntegerOnSegment(const char* noDigital, const char* lessMin, const char* moreMax, int min, int max);
+void OutMenu(int);
+///Простая функция убирающая зарезервированное место в динамической памяти под массив, возвращает true
+bool ResetArray(int size, float **arV2);
+
+bool CreateArray(int size, float*** arV2);
+bool RundArray(int size, float **arV2);
+/**
+*\brief Функция, которая выводит в консоль элементы двухмерного массива.
+* \param[in] size Размер массива
+* \param[in] arV2 Указатель на первый элемент двухмерного массива
+*/
+void OutArray(int size, float**);
+/**
+*\brief Функция, которая вводит элементы двухмерного массива в заданном сегменте.
+* \param[in] min Минимальное значение элемента массива
+* \param[in] max Максимальное значение элемента массива
+* \param[in] size размер массива
+* \param[in] arV2 указатель на первый элемент двухмерного массива
+*\return True.
+*/
+bool InArray(double max, double min, int size, float **arV2);
+float СalculationAverageValue(int menuVar, int size, float **arV2);
+void OutResult(int variant, float averageWeightI);
+
+int main()
+{
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	setlocale(LC_ALL, "Russian");
+	setlocale(LC_ALL, "rus");
+
+
+	srand(time(NULL));
+	int menu = 12;
+	int menu2 = -1;
+	int menu3 = -1;
+
+	char c = '\0';
+	int size = 2;
+	float **arV2 = NULL;
+	float sum1 = 0.0f;
+	float sum2 = 0.0f;
+	float sum3 = 0.0f;
+	float sum4 = 0.0f;
+	int elementSum1 = 0;
+	int elementSum2 = 0;
+	int elementSum3 = 0;
+	int elementSum4 = 0;
+	float averageWeight1 = -1.0f;
+	float averageWeight2 = -1.0f;
+	float averageWeight3 = -1.0f;
+	float averageWeight4 = -1.0f;
+	const double fmax = 3.402823466e+38;
+	const double fmin = 1.175494351e-38;
+
+
+	bool enteredArray = false;
+	bool createArray = false;
+
+
+
+	do
+	{
+		OutMenu(1);
+		menu = CheckInteger();
+
+		switch (menu)
+		{
+		case 1:
+			createArray = !ResetArray(size, arV2);
+			enteredArray = false;
+			averageWeight1 = -1.0f;
+			averageWeight2 = -1.0f;
+			averageWeight3 = -1.0f;
+			averageWeight4 = -1.0f;
+			
+			printf("Введите размер двухмерного массива: ");
+			//Ввод размера массива
+			size = CheckIntegerOnSegment(1, 14142);
+			printf("\nВы ввели массив размером %d на %d\n\n", size, size);
+			createArray = CreateArray(size, &arV2);
+			break;
+		case 2:
+			if (createArray && !enteredArray)
+			{
+				
+				enteredArray = InArray(fmax, -fmax, size, arV2);
+			}
+			else if (!enteredArray)
+				printf("\nМассив должен быть создан!\n\n");
+			else
+				printf("\nЭлементы массива уже заданы!\n\n");
+		
+			break;
+		case 3:
+			if (createArray && !enteredArray)
+			{
+				printf("Ввод в массив случайных чисел\n\n");
+				enteredArray = RundArray(size, arV2);
+			}
+			else if (!enteredArray)
+				printf("\nМассив должен быть создан!\n\n");
+			else
+				printf("\nЭлементы массива уже заданы!\n\n");
+			
+			break;
+		case 4:
+			if (createArray && enteredArray)
+			{
+				OutArray(size, arV2);
+			}
+			else
+				printf("Необходим массив с данными\n\n");
+			break;
+		case 5:
+			if (createArray && enteredArray)
+			{
+				int menuVar = -1;
+				do
+				{
+					OutMenu(2);
+					menuVar = CheckInteger();
+
+					switch (menuVar)
+					{
+					case 1:
+						if (averageWeight1 == -1.0f)
+						{
+							averageWeight1 = СalculationAverageValue(1, size, arV2);
+							printf("Расчет для варианта 1 выполнен\n");
+						}
+						else
+							printf("Расчет для 1 варианта уже был выполнен!");
+						break;
+					case 2:
+						if (averageWeight2 == -1.0f)
+						{
+							averageWeight2 = СalculationAverageValue(2, size, arV2);
+							printf("Расчет для варианта 2 выполнен\n");
+						}
+						else
+							printf("Расчет для 2 варианта уже был выполнен!");
+						break;
+					case 3:
+						if (averageWeight3 == -1.0f)
+						{
+							averageWeight3 = СalculationAverageValue(3, size, arV2);
+
+							printf("Расчет для варианта 3 выполнен\n");
+						}
+						else
+							printf("Расчет для 3 варианта уже был выполнен!");
+						break;
+					case 4:
+						if (averageWeight4 == -1.0f)
+						{
+							averageWeight4 = СalculationAverageValue(4, size, arV2);
+							printf("Расчет для варианта 4 выполнен\n");
+						}
+						else
+							printf("Расчет для 4 варианта уже был выполнен!");
+						break;
+					case 0:
+						break;
+					default:
+						printf("Неверный пункт");
+						break;
+					}
+				} while (menuVar != 0);
+			}
+			else
+				printf("Необходим массив с данными\n\n");
+			break;
+		case 6:
+			if (createArray && enteredArray)
+			{
+				
+				int menu3 = -1;
+				do
+				{
+					OutMenu(3);
+					menu3 = CheckInteger();
+
+					switch (menu3)
+					{
+					case 1:
+						OutResult(menu3, averageWeight1);
+						break;
+					case 2:
+						OutResult(menu3, averageWeight2);
+						break;
+					case 3:
+						OutResult(menu3, averageWeight3);
+						break;
+					case 4:
+						OutResult(menu3, averageWeight4);
+						break;
+					case 0:
+						break;
+					default:
+						printf("Неверный пункт");
+						break;
+					}
+				} while (menu3 != 0);
+			}
+			else
+				printf("Необходим массив с данными\n\n");
+			break;
+		case 0:
+			ResetArray(size, arV2);
+			break;
+		default:
+			printf("\nНеверный выбор меню!\n\n");
+			break;
+		}
+	} while (menu != 0);
+	return 0;
+}
+
+
+float CheckFloat()
+{
+	float variable = 0.0f;
+	char c = '\0';
+	while (scanf_s("%f%c", &variable, &c, 1) != 2 || c != '\n')
+	{
+			printf("Данные введены неверно!\n\n");
+			while (getchar() != '\n');
+	}
+	return variable;
+}
+
+//float CheckFloat(const char* a)
+//{
+//	float variable = 0.0f;
+//	char c = '\0';
+//	while (scanf_s("%f%c", &variable, &c, 1) != 2 || c != '\n')
+//	{
+//		printf("%s\n\n", a);
+//		while (getchar() != '\n');
+//	}
+//	return variable;
+//}
+
+int CheckInteger()
+{
+	int variable = 0;
+	char c = '\0';
+	while (scanf_s("%d%c", &variable, &c, 1) != 2 || c != '\n')
+	{
+		printf("Данные введены неверно!\n\n");
+		while (getchar() != '\n');
+	}
+	return variable;
+}
+//
+//int CheckInteger(const char* a)
+//{
+//	int variable = 0;
+//	char c = '\0';
+//	while (scanf_s("%d%c", &variable, &c, 1) != 2 || c != '\n')
+//	{
+//		printf("%s\n\n", a);
+//		while (getchar() != '\n');
+//	}
+//	return variable;
+//}
+
+
+float CheckFloatOnSegment(double min, double max)
+{
+	float variable = 0.0f;
+	char ch = '\0';
+	do
+	{
+		ch = '\0';
+		variable = CheckFloat();
+		if (variable < min)
+		{
+			printf("Введите число больше\n\n");
+		}
+		else if (variable > max)
+		{
+			printf("Введите число меньше\n\n");
+		}
+
+	} while (variable < min || variable> max);
+
+	return variable;
+}
+
+//float CheckFloatOnSegment(const char* noDigital, const char* lessMin, const char* moreMax, double min, double max)
+//{
+//	float variable = 0.0f;
+//	char ch = '\0';
+//	do
+//	{
+//		ch = '\0';
+//		variable = CheckFloat(noDigital);
+//		if (variable < min)
+//		{
+//			printf("%s\n\n", lessMin);
+//		}
+//		else if (variable > max)
+//		{
+//			printf("%s\n\n", moreMax);
+//		}
+//
+//	} while (variable < min || variable> max);
+//
+//	return variable;
+//}
+
+int CheckIntegerOnSegment(int min, int max)
+{
+	int variable = 0;
+	char ch = '\0';
+	do
+	{
+		ch = '\0';
+		variable = CheckInteger();
+		if (variable < min)
+		{
+			printf("Введите число больше\n\n");
+		}
+		else if (variable > max)
+		{
+			printf("Введите число меньше\n\n");
+		}
+
+	} while (variable < min || variable> max);
+
+	return variable;
+}
+
+//int CheckIntegerOnSegment(const char* noDigital, const char* lessMin, const char* moreMax, int min, int max)
+//{
+//	int variable = 0;
+//	char ch = '\0';
+//	do
+//	{
+//		ch = '\0';
+//		variable = CheckInteger(noDigital);
+//		if (variable < min)
+//		{
+//			printf("%s\n\n", lessMin);
+//		}
+//		else if (variable > max)
+//		{
+//			printf("%s\n\n", moreMax);
+//		}
+//
+//	} while (variable < min || variable> max);
+//
+//	return variable;
+//}
+void OutMenu(int var)
+{
+	if (var == 1)
+	{
+		printf("_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_\n");
+		printf("Введите 1 что бы создать массив\n");
+		printf("Введите 2 что бы ввести элементы массива\n");
+		printf("Введите 3 что бы ввести в массив случайные числа\n");
+		printf("Введите 4 что бы вывести массив\n");
+		printf("Введите 5 что бы определить среднее арифметическое элементов, располагающихся в выбранном пользователем секторе \n");
+		printf("Введите 6 что бы вывести среднее арифметическое элементов, располагающихся в выбранном пользователем секторе \n");
+		printf("######################\n");
+		printf("Введите 0 что бы выйти\n");
+		printf("_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_\n\n");
+	}
+	else if(var == 2)
+	{
+		printf("\nНажмите 1 что бы посчитать среднее арифметическое элементов, располагающихся не ниже главной и не ниже побочной диагонали матрицы\n");
+		printf("Нажмите 2 что бы посчитать среднее арифметическое элементов, располагающихся не ниже главной и не выше побочной диагонали матрицы\n");
+		printf("Нажмите 3 что бы посчитать среднее арифметическое элементов, располагающихся не выше главной и не выше побочной диагонали матрицы\n");
+		printf("Нажмите 4 что бы сопределить среднее арифметическое элементов, располагающихся в выбранном пользователем секторе\n\n");
+		printf("Нажмите 0 что бы выйти\n\n");
+	}	
+	else if (var == 3)
+	{
+		printf("\nНажмите 1 что бы вывести среднее арифметическое элементов, располагающихся не ниже главной и не ниже побочной диагонали матрицы\n");
+		printf("Нажмите 2 что бы вывести среднее арифметическое элементов, располагающихся не ниже главной и не выше побочной диагонали матрицы\n");
+		printf("Нажмите 3 что бы вывести среднее арифметическое элементов, располагающихся не выше главной и не выше побочной диагонали матрицы\n");
+		printf("Нажмите 4 что бы вывести среднее арифметическое элементов, располагающихся не выше главной и не ниже побочной диагонали матрицы\n\n");
+		printf("Нажмите 0 что бы выйти\n\n");
+	}
+}
+
+float СalculationAverageValue(int menuVar, int size, float **arV2)
+{
+	int elementSumI = 0;
+	double sumI = 0.0;
+	float averageWeightI = 0.0f;
+	switch (menuVar)
+	{
+	case 1:
+		for (int i = 0; i <= size / 2; i++)
+			for (int j = i; j < size - i; j++)
+			{
+				elementSumI++;
+				sumI += arV2[i][j];
+			}
+		averageWeightI = sumI / elementSumI;
+
+		break;
+	case 2:
+		for (int j = size - 1; j >= size / 2; j--)
+			for (int i = size - 1 - j; i <= j; i++)
+			{
+				elementSumI++;
+				sumI += arV2[i][j];
+			}
+		averageWeightI = sumI / elementSumI;
+				break;
+	case 3:
+		for (int i = size - 1; i >= size / 2; i--)
+			for (int j = i; j >= size - 1 - i; j--)
+			{
+				elementSumI++;
+				sumI += arV2[i][j];
+			}
+		averageWeightI = sumI / elementSumI;
+		break;
+	case 4:
+		for (int j = 0; j <= size / 2; j++)
+			for (int i = j; i <= size - 1 - j; i++)
+			{
+				elementSumI++;
+				sumI += arV2[i][j];
+			}
+		averageWeightI = sumI / (float)elementSumI;
+		break;
+	}	
+	return averageWeightI;
+}
+
+void OutResult(int variant, float averageWeightI)
+{
+	if (averageWeightI != -1.0f)
+	{
+		printf("Расчет для %d варианта:%f\n", variant, averageWeightI);
+	}
+	else
+		printf("Сначала нужно выполнить расчет для %d варианта!", variant);
+}
+
+void OutArray(int size, float **arV2)
+{
+	printf("\nВывод массива\n\n");
+	for (int i = 0; i < size; i++)
+	{
+		for (int j = 0; j < size; j++)
+		{
+			printf("%f\t", arV2[i][j]);
+		}
+		putchar('\n');
+	}
+	putchar('\n');
+	putchar('\n');	
+}
+
+bool InArray(double max, double min, int size, float **arV2)
+{
+
+	char c = '\0';
+	float element = 1.0f;
+	putchar('\n');
+		
+	for (int i = 0; i < size; i++)
+		for (int j = 0; j < size; j++)
+		{
+				
+			printf("Введите элемент массива с индексами [%d][%d] ", i, j);
+
+			CheckFloatOnSegment(min, max);
+
+			arV2[i][j] = element;
+			element = (max + min)/2;
+
+			putchar('\n');
+		}
+	return true;
+
+}
+
+bool RundArray(int size,float **arV2)
+{
+
+	for (int i = 0; i < size; i++)
+		for (int j = 0; j < size; j++)
+		{
+			arV2[i][j] = (rand() % 672) / 3.1f;
+		}
+	return true;
+
+}
+
+bool CreateArray(int size, float*** arV2)
+{
+	*arV2 = new float*[size];
+	for (int i = 0; i < size; i++)
+	{
+		(*arV2)[i] = new float[size]();
+	}
+	return true;
+}
+
+bool ResetArray(int size, float **arV2)
+{
+	if (arV2 != NULL)
+	{
+		for (int i = 0; i < size; i++)
+		{
+			delete[] arV2[i];
+		}
+
+		delete[] arV2;
+	}
+	return true;
+}
+
