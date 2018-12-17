@@ -5,7 +5,7 @@
 *\version 1.0 
 *\example подсчет среднего арифметического элементов, располагающихся не выше главной и не выше побочной диагонали матрицы. 
 */
-
+#include "float.h"
 #include "stdafx.h"
 #include <clocale>
 #include <stdio.h>
